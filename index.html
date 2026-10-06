@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ประเมินความเสี่ยงมะเร็งเต้านม</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #ffe4ee, #fff5f8);
+      color: #4a3340;
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header .icon {
+      font-size: 54px;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      color: #c63f72;
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #7d5f6b;
+      font-size: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 2px solid #ffd2df;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(193, 67, 112, 0.12);
+    }
+
+    .title-box {
+      background: #f8d7e2;
+      color: #a62f5c;
+      text-align: center;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 21px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .instruction {
+      background: #fff4f7;
+      border-left: 5px solid #e16a95;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .question {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: #fff9fb;
+      border: 2px solid #f4d8e1;
+      border-radius: 15px;
+      padding: 17px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .question:hover {
+      background: #ffedf3;
+      border-color: #eb9fba;
+    }
+
+    .question.selected {
+      background: #ffe4ee;
+      border-color: #dc6a93;
+    }
+
+    .question input[type="checkbox"] {
+      width: 23px;
+      height: 23px;
+      min-width: 23px;
+      margin-top: 3px;
+      accent-color: #d94f7f;
+      cursor: pointer;
+    }
+
+    .question-text {
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .number {
+      font-weight: bold;
+      color: #c63f72;
+    }
+
+    .example {
+      color: #806d75;
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .button-area {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .evaluate-btn {
+      background: linear-gradient(135deg, #e55f8e, #c83e70);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 42px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(198, 62, 112, 0.25);
+    }
+
+    .evaluate-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .note {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #816e76;
+      line-height: 1.6;
+    }
+
+    /* popup */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(55, 30, 40, 0.55);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 560px;
+      border-radius: 24px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+      animation: popup 0.25s ease;
+    }
+
+    @keyframes popup {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .result-icon {
+      font-size: 54px;
+      margin-bottom: 8px;
+    }
+
+    .score {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .risk-title {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .advice-box {
+      background: rgba(255, 255, 255, 0.76);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: left;
+      line-height: 1.8;
+      margin-top: 12px;
+    }
+
+    .advice-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .none {
+      background: #dff4e5;
+      color: #285937;
+    }
+
+    .low {
+      background: #fff1a6;
+      color: #665000;
+    }
+
+    .medium {
+      background: #ffb85c;
+      color: #633500;
+    }
+
+    .high {
+      background: #e55b5b;
+      color: white;
+    }
+
+    .modal-buttons {
+      margin-top: 20px;
+    }
+
+    .close-btn,
+    .reset-btn {
+      border: none;
+      padding: 11px 22px;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 4px;
+    }
+
+    .close-btn {
+      background: white;
+      color: #b33764;
+    }
+
+    .reset-btn {
+      background: #b63b68;
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px 10px;
+      }
+
+      .card {
+        padding: 20px 14px;
+      }
+
+      .header h1 {
+        font-size: 25px;
+      }
+
+      .question {
+        padding: 14px;
+      }
+
+      .question-text {
+        font-size: 15px;
+      }
+
+      .modal-content {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="icon">🎀</div>
+      <h1>แบบประเมินความเสี่ยงมะเร็งเต้านม</h1>
+      <p>ประเมินปัจจัยเสี่ยงเบื้องต้นด้วยตนเอง</p>
+    </div>
+
+    <div class="card">
+
+      <div class="title-box">
+        ปัจจัยเสี่ยงต่อการเกิดโรคมะเร็งเต้านม
+      </div>
+
+      <div class="instruction">
+        <b>คำชี้แจง :</b>
+        โปรดทำเครื่องหมาย ✓ ในข้อที่ตรงกับตนเอง
+        จากนั้นกดปุ่ม “ประเมินความเสี่ยง”
+      </div>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">1.</span>
+          คนในครอบครัวเคยเป็นมะเร็งเต้านมหรือไม่
+          <div class="example">
+            เช่น แม่ พี่สาว น้องสาว หรือลูกสาว เคยเป็นมะเร็งเต้านม
+          </div>
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">2.</span>
+          เคยเป็นโรคหรือเคยมีก้อนที่เต้านมหรือไม่
+          <div class="example">
+            เช่น เคยมีก้อน เจ็บเต้านมผิดปกติ หรือเคยรักษาโรคเกี่ยวกับเต้านม
+          </div>
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">3.</span>
+          มีคนในตระกูลเป็นมะเร็งเต้านมหลายคนหรือไม่
+          <div class="example">
+            เช่น ญาติพี่น้องหลายคนเคยเป็นมะเร็งเต้านมหรือมะเร็งรังไข่
+          </div>
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">4.</span>
+          ชอบกินอาหารมัน ๆ เป็นประจำหรือไม่
+          <div class="example">
+            เช่น ของทอด หมูสามชั้น หนังไก่ หรืออาหารกะทิบ่อย ๆ
+          </div>
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">5.</span>
+          ไม่มีลูก หรือมีลูกคนแรกตอนอายุมากกว่า 30 ปีหรือไม่
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">6.</span>
+          มีประจำเดือนครั้งแรกตอนอายุน้อยกว่า 12 ปีหรือไม่
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">7.</span>
+          ประจำเดือนหมดตอนอายุมากกว่า 50 ปีหรือไม่
+        </div>
+      </label>
+
+      <label class="question">
+        <input type="checkbox" class="risk" />
+        <div class="question-text">
+          <span class="number">8.</span>
+          กินยาคุมกำเนิดติดต่อกันเกิน 5 ปีหรือไม่
+        </div>
+      </label>
+
+      <div class="button-area">
+        <button class="evaluate-btn" onclick="evaluateRisk()">
+          ประเมินความเสี่ยง
+        </button>
+      </div>
+
+      <div class="note">
+        แบบประเมินนี้ใช้สำหรับประเมินปัจจัยเสี่ยงเบื้องต้น
+        ไม่สามารถใช้แทนการวินิจฉัยโรคโดยแพทย์ได้
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POPUP -->
+  <div id="resultModal" class="modal">
+    <div id="modalContent" class="modal-content">
+
+      <div id="resultIcon" class="result-icon"></div>
+      <div id="scoreText" class="score"></div>
+      <div id="riskTitle" class="risk-title"></div>
+
+      <div class="advice-box">
+        <div class="advice-title">คำแนะนำ</div>
+        <div id="adviceText"></div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="close-btn" onclick="closeModal()">ปิด</button>
+        <button class="reset-btn" onclick="resetForm()">ประเมินใหม่</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const checkboxes = document.querySelectorAll(".risk");
+
+    checkboxes.forEach(function (checkbox) {
+      checkbox.addEventListener("change", function () {
+        const questionBox = this.closest(".question");
+
+        if (this.checked) {
+          questionBox.classList.add("selected");
+        } else {
+          questionBox.classList.remove("selected");
+        }
+      });
+    });
+
+    function evaluateRisk() {
+      let score = 0;
+
+      checkboxes.forEach(function (checkbox) {
+        if (checkbox.checked) {
+          score++;
+        }
+      });
+
+      const modal = document.getElementById("resultModal");
+      const modalContent = document.getElementById("modalContent");
+      const resultIcon = document.getElementById("resultIcon");
+      const scoreText = document.getElementById("scoreText");
+      const riskTitle = document.getElementById("riskTitle");
+      const adviceText = document.getElementById("adviceText");
+
+      modalContent.classList.remove("none", "low", "medium", "high");
+
+      if (score === 0) {
+        modalContent.classList.add("none");
+
+        resultIcon.innerHTML = "💗";
+        scoreText.innerHTML = "คุณเลือกปัจจัยเสี่ยง <b>0 ข้อ</b>";
+        riskTitle.innerHTML = "ยังไม่พบปัจจัยเสี่ยงจากรายการที่ประเมิน";
+        adviceText.innerHTML =
+          "ควรดูแลสุขภาพอย่างสม่ำเสมอ และตรวจเต้านมด้วยตนเองเป็นประจำทุกเดือน หากพบก้อนหรือความผิดปกติของเต้านม ควรปรึกษาแพทย์หรือบุคลากรทางการแพทย์";
+      }
+
+      else if (score <= 2) {
+        modalContent.classList.add("low");
+
+        resultIcon.innerHTML = "💛";
+        scoreText.innerHTML = "คุณมีปัจจัยเสี่ยง <b>" + score + " ข้อ</b>";
+        riskTitle.innerHTML = "ความเสี่ยงระดับต่ำ";
+        adviceText.innerHTML =
+          "ควรตรวจเต้านมด้วยตนเองเป็นประจำทุกเดือน และเข้ารับการตรวจโดยแพทย์หรือบุคลากรทางการแพทย์อย่างน้อยปีละ 1 ครั้ง";
+      }
+
+      else if (score <= 4) {
+        modalContent.classList.add("medium");
+
+        resultIcon.innerHTML = "🧡";
+        scoreText.innerHTML = "คุณมีปัจจัยเสี่ยง <b>" + score + " ข้อ</b>";
+        riskTitle.innerHTML = "ความเสี่ยงระดับปานกลาง";
+        adviceText.innerHTML =
+          "ควรปรึกษาแพทย์เพื่อวางแผนการตรวจคัดกรองเพิ่มเติม เช่น การทำแมมโมแกรม (Mammogram) ร่วมกับอัลตราซาวนด์ ตามช่วงอายุที่เหมาะสม";
+      }
+
+      else {
+        modalContent.classList.add("high");
+
+        resultIcon.innerHTML = "❤️";
+        scoreText.innerHTML = "คุณมีปัจจัยเสี่ยง <b>" + score + " ข้อ</b>";
+        riskTitle.innerHTML = "ความเสี่ยงระดับสูง";
+        adviceText.innerHTML =
+          "แนะนำให้พบแพทย์ผู้เชี่ยวชาญเฉพาะทาง เพื่อวางแผนการเฝ้าระวัง การตรวจคัดกรองอย่างใกล้ชิด และรับคำแนะนำในการปรับเปลี่ยนพฤติกรรมลดความเสี่ยง";
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("resultModal").style.display = "none";
+    }
+
+    function resetForm() {
+      checkboxes.forEach(function (checkbox) {
+        checkbox.checked = false;
+        checkbox.closest(".question").classList.remove("selected");
+      });
+
+      document.getElementById("resultModal").style.display = "none";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    window.addEventListener("click", function (event) {
+      const modal = document.getElementById("resultModal");
+
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+  </script>
+
+</body>
+</html>
